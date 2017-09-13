@@ -1,5 +1,6 @@
 package main;
 
+import database.Manejador;
 import freemarker.template.Configuration;
 import modelo.Registro;
 import spark.ModelAndView;
@@ -20,6 +21,9 @@ public class Main {
     public static void main(String[] args) {
         ArrayList<Registro> registros = new ArrayList<>();
 
+        Manejador bd = new Manejador();
+        bd.crearTablas();
+
         staticFiles.location("plantilla");
 
         Configuration configuration=new Configuration(Configuration.VERSION_2_3_23);
@@ -29,7 +33,7 @@ public class Main {
         get("/",(request,response)->{
             Map<String,Object> attributes = new HashMap<>();
 
-            attributes.put("estudiantes",registros);
+//            attributes.put("estudiantes",registros);
 
             return new ModelAndView(attributes,"inicio.ftl");
         },freeMarkerEngine);

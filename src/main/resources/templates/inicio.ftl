@@ -177,7 +177,10 @@
                                     nivel : $("#nivel").val(),
                                     ubicacion: $("#ubicacion").val()
                                 });
-                                db.registros.clear();
+
+                                $("#nombre").val("");
+                                $("#sector").val("");
+//                                db.registros.clear();
 
 //                                db.registros.each(function (results) {
 //                                    console.log(results);
@@ -197,6 +200,8 @@
         </div>
     </div>
 </section>
+
+
 
 <footer>
     <div class="container">
