@@ -21,6 +21,16 @@
     <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
 
+    <!-- Include Dexie -->
+    <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+    <script>
+        var db = new Dexie("registro_database");
+        db.version(1).stores({
+            registros: 'nombre,sector,nivel,ubicacion'
+        });
+
+    </script>
+
     <!-- Theme CSS -->
     <link href="css/agency.min.css" rel="stylesheet">
 
@@ -124,23 +134,23 @@
 
             </div>
             <div class="col-md-6">
-                <form method="post" action="/">
+                <form method="post" <#--action="/"-->>
                     <div class="form-group row">
                         <label for="example-search-input" class="col-2 col-form-label">Nombre</label>
                         <div class="col-10">
-                            <input class="form-control" type="text" name="Nombre">
+                            <input class="form-control" type="text" id="nombre" name="Nombre" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="example-email-input" class="col-2 col-form-label">Sector</label>
                         <div class="col-10">
-                            <input class="form-control" type="text" name="Sector">
+                            <input class="form-control" type="text" id="sector" name="Sector" required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="example-search-input" class="col-2 col-form-label">Nivel Escolar</label>
                         <div class="col-10">
-                            <select name="Nivel" class="form-control">
+                            <select name="Nivel" id="nivel" class="form-control">
                                 <option>B&#225;sico</option>
                                 <option>Medio</option>
                                 <option>Universitario</option>
@@ -156,8 +166,28 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <button type="submit" class="btn btn-warning">Listo!</button>
+                        <button type="button" id="registrar" class="btn btn-warning">Listo!</button>
                     </div>
+                    <script>
+                        $("#registrar").click(function (e) {
+                            if($("#nombre").val() != "" && $("#sector").val() != ""){
+                                db.registros.add({
+                                    nombre: $("#nombre").val(),
+                                    sector: $("#sector").val(),
+                                    nivel : $("#nivel").val(),
+                                    ubicacion: $("#ubicacion").val()
+                                });
+                                db.registros.clear();
+
+//                                db.registros.each(function (results) {
+//                                    console.log(results);
+//                                });
+
+                            }else {
+                                alert("Todos los campos deben de estar completos")
+                            }
+                        })
+                    </script>
                 </form>
                 <div id="map-canvas" style="width:600px;height:400px"></div>
             </div>
