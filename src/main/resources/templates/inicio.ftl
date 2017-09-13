@@ -178,8 +178,8 @@
                                     ubicacion: $("#ubicacion").val()
                                 });
 
-                                $("#nombre").val("");
-                                $("#sector").val("");
+                                $("#nombre").val('');
+                                $("#sector").val('');
 //                                db.registros.clear();
 
 //                                db.registros.each(function (results) {
