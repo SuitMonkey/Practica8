@@ -39,6 +39,7 @@ public class Manejador {
                     "  RegistroCode serial PRIMARY KEY," +
                     "  nombre text," +
                     "  sector text," +
+                    "  nivel text," +
                     "  ubicacion text)";
             stmt.executeUpdate(sql);
 

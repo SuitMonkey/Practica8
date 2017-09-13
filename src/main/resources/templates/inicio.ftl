@@ -80,8 +80,7 @@
 
         $(function(){
 
-            var
-                    $online = $('.online');
+            var $online = $('.online');
 
             Offline.on('down', function () {
                 $("#enviar").prop('disabled', true);
