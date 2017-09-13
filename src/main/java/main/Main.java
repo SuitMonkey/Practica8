@@ -105,5 +105,19 @@ public class Main {
             return new ModelAndView(attributes,"inicio.ftl");
         },freeMarkerEngine);
 
+        post("/insertpostgres",(request,response)->{
+            Map<String,Object> attributes = new HashMap<>();
+
+            String ubicacion = request.queryParams("ubicacion");
+            String nombre = request.queryParams("nombre");
+            String sector = request.queryParams("sector");
+            String nivel = request.queryParams("nivel");
+            System.out.println(nombre + " " + sector + " " + nivel + " " + ubicacion);
+
+            bd.insertarRegistro(new Registro(nombre,sector,nivel,ubicacion));
+
+            return "ok";
+        });
+
     }
 }

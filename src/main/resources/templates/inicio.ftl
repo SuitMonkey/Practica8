@@ -33,6 +33,8 @@
 
     <!-- Theme CSS -->
     <link href="css/agency.min.css" rel="stylesheet">
+    <link href="css/offline-language-english.css" rel="stylesheet">
+    <link href="css/offline-theme-chrome-indicator.css" rel="stylesheet">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -43,6 +45,7 @@
 
     <!-- jQuery -->
     <script src="vendor/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="js/offline-min.js"></script>
 
     <script type="text/javascript" src="js/geolocator.js"></script>
     <script type="text/javascript">
@@ -74,6 +77,21 @@
                 $("#ubicacion").val(location.formattedAddress);
             });
         };
+
+        $(function(){
+
+            var
+                    $online = $('.online');
+
+            Offline.on('down', function () {
+                $("#enviar").prop('disabled', true);
+            });
+
+            Offline.on('up', function () {
+                $("#enviar").prop('disabled', false);;
+            });
+
+        });
 
     </script>
 
@@ -115,6 +133,7 @@
             <div class="intro-text">
                 <div class="intro-lead-in">Practica 8</div>
                 <div class="intro-heading">2012-0559</div>
+                <div class="intro-heading">2013-0204</div>
                 <a href="#services" class="page-scroll btn btn-xl">Registrar!</a>
             </div>
         </div>
@@ -166,7 +185,7 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <button type="button" id="registrar" class="btn btn-warning">Listo!</button>
+                        <button type="button" id="registrar" class="btn btn-warning">Agregar!</button>
                     </div>
                     <script>
                         $("#registrar").click(function (e) {
@@ -189,7 +208,8 @@
                             }else {
                                 alert("Todos los campos deben de estar completos")
                             }
-                        })
+                        });
+
                     </script>
                 </form>
                 <div id="map-canvas" style="width:600px;height:400px"></div>
@@ -200,6 +220,51 @@
         </div>
     </div>
 </section>
+<section id="datos-locales">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h2 class="section-heading">Registros</h2>
+            </div>
+        </div>
+        <div class="row text-center">
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-6">
+
+                <div class="form-group row">
+                    <button type="button" id="enviar" class="btn btn-warning">Enviar!</button>
+                </div>
+                <div id="map-canvas" style="width:600px;height:400px"></div>
+            </div>
+            <div class="col-md-3">
+
+            </div>
+        </div>
+    </div>
+    <script>$
+    ("#enviar").click(function (e) {
+
+        db.registros.each(function (results) {
+            console.log(results);
+            alert("nombre="+results.nombre+"&sector="+results.sector+"&nivel="+results.nivel+"&ubicacion="+results.ubicacion);
+                        $.ajax({
+                url: "/insertpostgres",
+                cache: false,
+                type: "POST",
+                data: "nombre="+results.nombre+"&sector="+results.sector+"&nivel="+results.nivel+"&ubicacion="+results.ubicacion,
+                success: function(html){
+                    console.log("ok");
+                }
+            });
+        });
+
+        db.registros.clear();
+
+    });
+    </script>
+</section>
 
 
 
@@ -207,7 +272,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-4">
-                <span class="copyright">Copyright &copy; Francis 20120559</span>
+                <span class="copyright">Copyright &copy; Francis 20120559 Jesus Henriquez 20130204</span>
             </div>
         </div>
     </div>
