@@ -1,0 +1,26 @@
+group 'Pucmm.Web'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+mainClassName = "main.Main"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    //Para instalar en Intellij: https://github.com/mplushnikov/lombok-intellij-plugin
+    compile group: 'org.projectlombok', name : 'lombok', version: '1.16.8'
+    // https://mvnrepository.com/artifact/com.sparkjava/spark-core
+    compile group: 'com.sparkjava', name: 'spark-core', version: '2.6.0'
+    // https://mvnrepository.com/artifact/org.freemarker/freemarker
+    compile group: 'org.freemarker', name: 'freemarker', version: '2.3.26-incubating'
+    // https://mvnrepository.com/artifact/com.sparkjava/spark-template-freemarker
+    compile group: 'com.sparkjava', name: 'spark-template-freemarker', version: '2.5.5'
+}
