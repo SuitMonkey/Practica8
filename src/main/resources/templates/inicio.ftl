@@ -233,17 +233,32 @@
             <div class="col-md-6">
 
                 <div class="form-group row">
+                    <table id="tablaLocal" class="table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Sector</th>
+                                <th>Nivel Escolar</th>
+                                <th>Ubucacion</th>
+                                <th>Borrar</th>
+                                <th>Modificar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                    <br>
                     <button type="button" id="enviar" class="btn btn-warning">Enviar!</button>
                 </div>
-                <div id="map-canvas" style="width:600px;height:400px"></div>
             </div>
             <div class="col-md-3">
 
             </div>
         </div>
     </div>
-    <script>$
-    ("#enviar").click(function (e) {
+    <script>
+        $("#enviar").click(function (e) {
 
         db.registros.each(function (results) {
             console.log(results);
@@ -270,8 +285,8 @@
 <footer>
     <div class="container">
         <div class="row">
-            <div class="col-md-4">
-                <span class="copyright">Copyright &copy; Francis 20120559 Jesus Henriquez 20130204</span>
+            <div class="col-md-6">
+                <span class="copyright">Copyright &copy; Francis 20120559 - Jesus Henriquez 20130204</span>
             </div>
         </div>
     </div>
