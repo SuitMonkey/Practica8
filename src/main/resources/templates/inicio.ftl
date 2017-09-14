@@ -190,7 +190,7 @@
                         $( window ).on( "load", function() {
 //                            db.registros.clear();
                             db.registros.each(function (results) {
-                                var markup = "<tr><td>"+ results.indicador +"</td><td>" + results.nombre + "</td><td>" + results.sector+ "</td>" +
+                                var markup = "<tr><td>" + results.nombre + "</td><td>" + results.sector+ "</td>" +
                                         "<td>" + results.nivel + "</td><td>" + results.ubicacion + "</td><td>"  +
                                         '<button type="button" id="borrar" onclick = "borrarregistro('+"'"+ results.nombre +"'"+')" class="btn btn-warning">Borrar!</button>'
                                         + "</td><td>" +
@@ -201,7 +201,7 @@
                         });
                         
                         $("#registrar").click(function (e) {
-                            alert(db.registros.get(1));
+                            alert(db.registros.first);
 
                             if($("#nombre").val() != "" && $("#sector").val() != ""){
                                 db.registros.add({
@@ -211,7 +211,7 @@
                                     ubicacion: $("#ubicacion").val()
                                 });
 
-                                var markup = "<tr><td>#</td><td>" + $("#nombre").val()+ "</td><td>" + $("#sector").val() + "</td>" +
+                                var markup = "<tr><td>" + $("#nombre").val()+ "</td><td>" + $("#sector").val() + "</td>" +
                                         "<td>" + $("#nivel").val() + "</td><td>" + $("#ubicacion").val() + "</td><td>"  +
                                         '<button type="button" id="borrar" onclick= "borrarregistro('+"'"+$("#nombre").val() +"'"+')" class="btn btn-warning">Borrar!</button>'
                                 + "</td><td>" +
@@ -258,7 +258,6 @@
                     <table id="tablaLocal" class="table">
                         <thead>
                             <tr>
-                                <th>id</th>
                                 <th>Nombre</th>
                                 <th>Sector</th>
                                 <th>Nivel Escolar</th>
@@ -272,6 +271,7 @@
                         </tbody>
                     </table>
                     <br>
+                    <hr>
                     <button type="button" id="enviar" class="btn btn-warning">Enviar!</button>
                 </div>
             </div>
