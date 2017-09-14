@@ -87,7 +87,7 @@
             });
 
             Offline.on('up', function () {
-                $("#enviar").prop('disabled', false);;
+                $("#enviar").prop('disabled', false);
             });
 
         });
@@ -187,7 +187,21 @@
                         <button type="button" id="registrar" class="btn btn-warning">Agregar!</button>
                     </div>
                     <script>
+                        $( window ).on( "load", function() {
+                            
+                            db.registros.each(function (results) {
+                                var markup = "<tr><td>" + results.nombre + "</td><td>" + results.sector+ "</td>" +
+                                        "<td>" + results.nivel + "</td><td>" + results.ubicacion + "</td><td>"  +
+                                        '<button type="button" id="borrar" onclick = "borrarregistro('+"'"+ results.nombre +"'"+')" class="btn btn-warning">Borrar!</button>'
+                                        + "</td><td>" +
+                                        '<button type="button" id="modificar" class="btn btn-warning">Modificar!</button>'
+                                        + "</td></tr>";
+                                $("table tbody").append(markup);
+                            })
+                        });
+                        
                         $("#registrar").click(function (e) {
+
                             if($("#nombre").val() != "" && $("#sector").val() != ""){
                                 db.registros.add({
                                     nombre: $("#nombre").val(),
@@ -196,19 +210,26 @@
                                     ubicacion: $("#ubicacion").val()
                                 });
 
+                                var markup = "<tr><td>" + $("#nombre").val()+ "</td><td>" + $("#sector").val() + "</td>" +
+                                        "<td>" + $("#nivel").val() + "</td><td>" + $("#ubicacion").val() + "</td><td>"  +
+                                        '<button type="button" id="borrar" onclick= "borrarregistro('+"'"+$("#nombre").val() +"'"+')" class="btn btn-warning">Borrar!</button>'
+                                + "</td><td>" +
+                                        '<button type="button" id="modificar" class="btn btn-warning">Modificar!</button>'
+                                + "</td></tr>";
+
+                                $("table tbody").append(markup);
+
                                 $("#nombre").val('');
                                 $("#sector").val('');
-//                                db.registros.clear();
-
-//                                db.registros.each(function (results) {
-//                                    console.log(results);
-//                                });
-
                             }else {
                                 alert("Todos los campos deben de estar completos")
                             }
                         });
 
+                        function borrarregistro(id) {
+                            console.log(id);
+                            db.registros.where("nombre").equals(id).delete();
+                        }
                     </script>
                 </form>
                 <div id="map-canvas" style="width:600px;height:400px"></div>
@@ -239,7 +260,7 @@
                                 <th>Nombre</th>
                                 <th>Sector</th>
                                 <th>Nivel Escolar</th>
-                                <th>Ubucacion</th>
+                                <th>Ubicacion</th>
                                 <th>Borrar</th>
                                 <th>Modificar</th>
                             </tr>
