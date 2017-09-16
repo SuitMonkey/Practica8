@@ -3,6 +3,7 @@ package database;
 import modelo.Registro;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 /**
  * Created by Francis Cáceres on 13/9/2017.
@@ -40,7 +41,9 @@ public class Manejador {
                     "  nombre text," +
                     "  sector text," +
                     "  nivel text," +
-                    "  ubicacion text)";
+                    "  ubicacion text," +
+                    "  latitud NUMERIC," +
+                    "  longitud NUMERIC)";
             stmt.executeUpdate(sql);
 
             stmt.close();
@@ -59,12 +62,14 @@ public class Manejador {
 
 
         try {
-            sql = "INSERT INTO REGISTRO (NOMBRE,SECTOR,NIVEL,UBICACION) VALUES (?,?,?,?)";
+            sql = "INSERT INTO REGISTRO (NOMBRE,SECTOR,NIVEL,UBICACION,LATITUD,LONGITUD) VALUES (?,?,?,?,?,?)";
             PreparedStatement ps1 = con.prepareStatement(sql);
             ps1.setString(1,registro.getNombre());
             ps1.setString(2,registro.getSector());
             ps1.setString(3,registro.getNivel());
             ps1.setString(4,registro.getLocation());
+            ps1.setDouble(5,registro.getLatitud());
+            ps1.setDouble(6,registro.getLongitud());
 
             ps1.executeUpdate();
 
@@ -77,29 +82,41 @@ public class Manejador {
         }
     }
 
-    public void actualizarRegistro(Registro registro, int id){
+    public ArrayList<Registro> listaRegistros()
+    {
         Connection con = connect();
-        System.out.println("insertarRegistro");
-        String sql = null;
-
+        System.out.println("listar");
+        Statement stmt = null;
+        ResultSet rs = null;
+        ArrayList<Registro> listPer = new ArrayList<>();
 
         try {
-            sql = "UPDATE REGISTRO SET NOMBRE = ?, SECTOR = ?, NIVEL = ?, UBICACION = ? WHERE REGISTROCODE = " + id;
-            PreparedStatement ps1 = con.prepareStatement(sql);
-            ps1.setString(1,registro.getNombre());
-            ps1.setString(2,registro.getSector());
-            ps1.setString(3,registro.getNivel());
-            ps1.setString(4,registro.getLocation());
+            stmt = con.createStatement();
+            String sql = "SELECT NOMBRE,SECTOR,NIVEL,UBICACION,LATITUD,LONGITUD FROM REGISTRO";
+            rs = stmt.executeQuery(sql);
 
-            ps1.executeUpdate();
+            while(rs.next()){
+                String NOMBRE = rs.getString("NOMBRE");
+                String SECTOR = rs.getString("SECTOR");
+                String NIVEL = rs.getString("NIVEL");
+                String UBICACION = rs.getString("UBICACION");
+                Double LATITUD = rs.getDouble("LATITUD");
+                Double LONGITUD = rs.getDouble("LONGITUD");
 
+                listPer.add(new Registro(NOMBRE,SECTOR,NIVEL,UBICACION,LATITUD,LONGITUD));
 
-            System.out.println("Registro_insertado!");
+            }
 
+            rs.close();
+            stmt.close();
             con.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return listPer;
+
     }
+
+
 
 }

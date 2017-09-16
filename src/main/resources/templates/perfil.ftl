@@ -31,6 +31,13 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js" integrity="sha384-ZoaMbDF+4LeFxg6WdScQ9nnR1QC2MIRxA1O9KWEXQwns1G8UNyIEZIQidzb0T1fo" crossorigin="anonymous"></script>
     <![endif]-->
 
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+
 </head>
 
 <body id="page-top" class="index">
@@ -43,92 +50,147 @@
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                 <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
             </button>
-            <a class="navbar-brand page-scroll" href="#page-top">Start Bootstrap</a>
+            <a class="navbar-brand page-scroll" href="/">Inicio</a>
         </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="hidden">
+                    <a href="#page-top"></a>
+                </li>
+                <li>
+                    <a class="page-scroll" href="#services">Registros Servidor</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+
     </div>
     <!-- /.container-fluid -->
 </nav>
 
-<!-- Header -->
 <div class="cabeza" style="background-image: url('../img/header-bg.jpg')">
-    <div class="container">
-        <div class="intro-text" style="padding-top: 100px">
-
-        </div>
-        <div class="intro-text" style="padding-top: 60px">
-
-        </div>
-        <div class="intro-text" style="padding-top: 60px">
-
-        </div>
-
+    <header>
         <div class="container">
-            <div class="row">
-                <div class="col-lg-12 text-center">
-                    <h2 class="section-heading" style="color: white">Visualización de Estudiante</h2>
-                </div>
-            </div>
-            <div class="row text-center">
-                <div class="col-md-3">
-
-                </div>
-                <div class="col-md-6">
-                    <form method="post" action="/perfil">
-                        <div class="form-group row">
-                            <label for="example-text-input" class="col-2 col-form-label" style="color: white">Matricula</label>
-                            <div class="col-10">
-                                <input class="form-control" type="text"  name="Matricula" value="${ele.getMatricula()}" readonly>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="example-search-input" class="col-2 col-form-label" style="color: white">Nombre</label>
-                            <div class="col-10">
-                                <input class="form-control" type="text" name="Nombre" value="${ele.getNombre()}">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="example-email-input" class="col-2 col-form-label" style="color: white">Apellido</label>
-                            <div class="col-10">
-                                <input class="form-control" type="text" name="Apellido" value="${ele.getApellido()}">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="example-url-input" class="col-2 col-form-label" style="color: white">Telefono</label>
-                            <div class="col-10">
-                                <input class="form-control" type="text" name="Telefono" value="${ele.getTelefono()}">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <button type="submit" class="btn btn-warning">Guardar</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="col-md-3">
-
-                </div>
+            <div class="intro-text">
+                <div class="intro-lead-in">Practica 8</div>
+                <div class="intro-heading">2012-0559</div>
+                <div class="intro-heading">2013-0204</div>
+                <a href="#services" class="page-scroll btn btn-xl">Registros Servidor</a>
             </div>
         </div>
+    </header>
+</div>
 
-        <div class="intro-text" style="padding-top: 60px">
-
+<section id="services">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h2 class="section-heading">Registros Servidor</h2>
+            </div>
         </div>
-        <div class="intro-text" style="padding-top: 60px">
+        <div class="row text-center">
+            <div class="col-md-1">
 
-        </div>
-        <div class="intro-text" style="padding-top: 60px">
+            </div>
+            <div class="col-md-10">
+                <table id="tablaLocal" class="table">
+                    <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Sector</th>
+                        <th>Nivel Escolar</th>
+                        <th>Ubicacion</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <#list registros as re>
+                    <tr>
+                        <#if (re.getNombre())??>
+                            <td>${re.getNombre()}</td>
+                        <#else>
+                            <td></td>
+                        </#if>
 
-        </div>
-        <div class="intro-text" style="padding-top: 60px">
+                        <#if (re.getSector())??>
+                            <td>${re.getSector()}</td>
+                        <#else>
+                            <td></td>
+                        </#if>
 
+                        <#if (re.getNivel())??>
+                            <td>${re.getNivel()}</td>
+                        <#else>
+                            <td></td>
+                        </#if>
+
+                        <#if (re.getLocation())??>
+                            <td>${re.getLocation()}</td>
+                        <#else>
+                            <td></td>
+                        </#if>
+                    </tr>
+
+                    </#list>
+                    </tbody>
+                </table>
+
+                <br>
+                <div id="map"></div>
+                <script>
+                    var map;
+                    function initMap() {
+                        map = new google.maps.Map(document.getElementById('map'), {
+                            zoom: 8,
+                            center: new google.maps.LatLng(19.0000000,-70.6667000)
+                        });
+
+                    <#list registros as re>
+                        var latLng = new google.maps.LatLng(${re.getLatitud()},${re.getLongitud()});
+                        var marker = new google.maps.Marker({
+                            position: latLng,
+                            map: map
+                        });
+                    </#list>
+                    }
+
+                </script>
+                <script async defer
+                        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBSPrMC0CkYzfZ0dxb7sH0bnxBd5E24WIY&callback=initMap">
+                </script>
+            </div>
+            <div class="col-md-1">
+
+            </div>
         </div>
     </div>
-</div>
+</section>
+
+
+<section id="mapeo">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-1">
+
+            </div>
+            <div class="col-md-10">
+
+
+
+            </div>
+            <div class="col-md-1">
+
+            </div>
+        </div>
+    </div>
+</section>
 
 <footer>
     <div class="container">
         <div class="row">
-            <div class="col-md-4">
-                <span class="copyright">Copyright &copy; Francis 20120559</span>
+            <div class="col-md-6">
+                <span class="copyright">Copyright &copy; Francis 20120559  - Jesus Henriquez 20130204</span>
             </div>
         </div>
     </div>

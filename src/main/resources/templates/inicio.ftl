@@ -26,8 +26,11 @@
     <script>
         var db = new Dexie("registro_database");
         db.version(1).stores({
-            registros: '++indicador,nombre,sector,nivel,ubicacion'
+            registros: '++indicador,nombre,sector,nivel,ubicacion,lat,long'
         });
+
+//        db.delete();
+//        db.registros.each((record) => console.log(record + " " + record.nombre));
 
     </script>
 
@@ -73,8 +76,14 @@
             };
             geolocator.locate(options, function (err, location) {
                 if (err) return console.log(err);
+
                 console.log(location);
+                console.log(location.coords.latitude);
+                console.log(location.coords.longitude);
+
                 $("#ubicacion").val(location.formattedAddress);
+                $("#lat").val(location.coords.latitude);
+                $("#long").val(location.coords.longitude);
             });
         };
 
@@ -117,6 +126,12 @@
                 </li>
                 <li>
                     <a class="page-scroll" href="#services">Nuevo Registro</a>
+                </li>
+                <li>
+                    <a class="page-scroll" href="#datos-locales">Registros locales</a>
+                </li>
+                <li>
+                    <a class="page-scroll" href="/perfil">Registros Servidor</a>
                 </li>
             </ul>
         </div>
@@ -181,59 +196,77 @@
                         <label for="example-url-input" class="col-2 col-form-label">Ubicaci&#243;n</label>
                         <div class="col-10">
                             <input class="form-control" type="text" id="ubicacion" name="ubicacion" readonly>
+                            <input id="lat" hidden>
+                            <input id="long" hidden>
                         </div>
                     </div>
                     <div class="form-group row">
                         <button type="button" id="registrar" class="btn btn-warning">Agregar!</button>
                     </div>
+
                     <script>
                         $( window ).on( "load", function() {
+                            var conteo = 1;
 //                            db.registros.clear();
                             db.registros.each(function (results) {
-                                var markup = "<tr><td>" + results.nombre + "</td><td>" + results.sector+ "</td>" +
+                                var markup = "<tr><td>" + conteo + "</td><td>" + results.nombre + "</td><td>" + results.sector+ "</td>" +
                                         "<td>" + results.nivel + "</td><td>" + results.ubicacion + "</td><td>"  +
-                                        '<button type="button" id="borrar" onclick = "borrarregistro('+"'"+ results.nombre +"'"+')" class="btn btn-warning">Borrar!</button>'
+                                        '<button type="button" id="borrar" onclick = "borrarregistro('+ conteo +')" class="btn btn-warning">Borrar!</button>'
                                         + "</td><td>" +
-                                        '<button type="button" id="modificar" class="btn btn-warning">Modificar!</button>'
+                                        '<button type="button" id="modificar" onclick = "modidificarRegistro('+ conteo +')"  class="btn btn-warning">Modificar!</button>'
                                         + "</td></tr>";
                                 $("table tbody").append(markup);
-                            })
+
+                                conteo++;
+                            });
+
                         });
                         
                         $("#registrar").click(function (e) {
-                            alert(db.registros.first);
 
                             if($("#nombre").val() != "" && $("#sector").val() != ""){
                                 db.registros.add({
                                     nombre: $("#nombre").val(),
                                     sector: $("#sector").val(),
                                     nivel : $("#nivel").val(),
-                                    ubicacion: $("#ubicacion").val()
+                                    ubicacion: $("#ubicacion").val(),
+                                    lat: $("#lat").val(),
+                                    long: $("#long").val()
                                 });
 
-                                var markup = "<tr><td>" + $("#nombre").val()+ "</td><td>" + $("#sector").val() + "</td>" +
-                                        "<td>" + $("#nivel").val() + "</td><td>" + $("#ubicacion").val() + "</td><td>"  +
-                                        '<button type="button" id="borrar" onclick= "borrarregistro('+"'"+$("#nombre").val() +"'"+')" class="btn btn-warning">Borrar!</button>'
-                                + "</td><td>" +
-                                        '<button type="button" id="modificar" class="btn btn-warning">Modificar!</button>'
-                                + "</td></tr>";
-
-                                $("table tbody").append(markup);
-
-                                $("#nombre").val('');
-                                $("#sector").val('');
+//
+                                location.reload();
                             }else {
                                 alert("Todos los campos deben de estar completos")
                             }
                         });
 
+                        function modidificarRegistro(id) {
+                            console.log(id);
+                            var nombre = prompt("Nombre:");
+                            var sector = prompt("Sector:");
+                            var nivel = prompt("Nivel: basico, medio, univer., postgrado, doctorado");
+
+                            db.registros.update(id, {nombre: nombre, sector: sector, nivel: nivel}).then(function (updated) {
+                                if (updated)
+                                    console.log ("Exitos en modificacion");
+                                else
+                                    console.log ("Error con la modificacion");
+                            });
+
+                            location.reload();
+
+                        }
+
                         function borrarregistro(id) {
                             console.log(id);
-                            db.registros.where("nombre").equals(id).delete();
+                            db.registros.where(":id").equals(id).delete();
+                            location.reload();
                         }
                     </script>
+
                 </form>
-                <div id="map-canvas" style="width:600px;height:400px"></div>
+                <div id="map-canvas" style="width:600px;height:400px" hidden></div>
             </div>
             <div class="col-md-3">
 
@@ -258,6 +291,7 @@
                     <table id="tablaLocal" class="table">
                         <thead>
                             <tr>
+                                <th>#</th>
                                 <th>Nombre</th>
                                 <th>Sector</th>
                                 <th>Nivel Escolar</th>
@@ -284,13 +318,15 @@
         $("#enviar").click(function (e) {
 
         db.registros.each(function (results) {
-            console.log(results);
-            alert("nombre="+results.nombre+"&sector="+results.sector+"&nivel="+results.nivel+"&ubicacion="+results.ubicacion);
-                        $.ajax({
-                url: "/insertpostgres",
-                cache: false,
-                type: "POST",
-                data: "nombre="+results.nombre+"&sector="+results.sector+"&nivel="+results.nivel+"&ubicacion="+results.ubicacion,
+//            console.log(results);
+//            console.log("nombre="+results.nombre+"&sector="+results.sector+"&nivel="+results.nivel+"&ubicacion="+results.ubicacion);
+
+                $.ajax({
+                    url: "/insertpostgres",
+                    cache: false,
+                    type: "POST",
+                    data: "nombre="+results.nombre+"&sector="+results.sector+"&nivel="+results.nivel+"&ubicacion="+results.ubicacion+
+                            "&lat="+results.lat+"&long="+results.long,
                 success: function(html){
                     console.log("ok");
                 }
@@ -298,6 +334,8 @@
         });
 
         db.registros.clear();
+
+        location.reload();
 
     });
     </script>

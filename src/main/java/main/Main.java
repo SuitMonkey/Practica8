@@ -19,7 +19,6 @@ import static spark.Spark.post;
  */
 public class Main {
     public static void main(String[] args) {
-        ArrayList<Registro> registros = new ArrayList<>();
 
         Manejador bd = new Manejador();
         bd.crearTablas();
@@ -33,77 +32,19 @@ public class Main {
         get("/",(request,response)->{
             Map<String,Object> attributes = new HashMap<>();
 
-//            attributes.put("estudiantes",registros);
 
             return new ModelAndView(attributes,"inicio.ftl");
         },freeMarkerEngine);
 
-        post("/",(request,response)->{
-            Map<String,Object> attributes = new HashMap<>();
-            Registro reg = new Registro();
-            reg.setNombre(request.queryParams("Nombre"));
-            reg.setSector(request.queryParams("Sector"));
-            reg.setNivel(request.queryParams("Nivel"));
-            reg.setLocation(request.queryParams("ubicacion"));
-            System.out.println("Nivel - "+request.queryParams("Nivel")+" "+"Ubicacion - "+request.queryParams("ubicacion"));
-
-            registros.add(reg);
-            response.redirect("/");
-
-
-            return new ModelAndView(attributes,"inicio.ftl");
-        },freeMarkerEngine);
-
-        get("/borrar",(request,response)->{
-            Map<String,Object> attributes = new HashMap<>();
-            String mat = request.queryParams("mat");
-            System.out.println("Borroo");
-
-            for(Registro s: registros){
-                if(s.getNombre().equals(mat)){
-                    registros.remove(s);
-                    break;
-                }
-            }
-            response.redirect("/");
-
-            return new ModelAndView(attributes,"inicio.ftl");
-        },freeMarkerEngine);
 
         get("/perfil",(request,response)->{
             Map<String,Object> attributes = new HashMap<>();
-            String mat = request.queryParams("mat");
-            Registro elegido = null;
 
-            for(Registro s: registros){
-                if(s.getNombre().equals(mat)){
-                    elegido = new Registro();
-                    elegido.setNombre(s.getNombre());
-                    elegido.setSector(s.getSector());
-                    elegido.setNivel(s.getNivel());
-                    elegido.setLocation(s.getLocation());
-                }
-            }
-
-            attributes.put("ele",elegido);
+            attributes.put("registros",bd.listaRegistros());
 
             return new ModelAndView(attributes,"perfil.ftl");
         },freeMarkerEngine);
 
-        post("/perfil",(request,response)->{
-            Map<String,Object> attributes = new HashMap<>();
-
-            String mat = request.queryParams("Matricula");
-            String nom = request.queryParams("Nombre");
-            String ape = request.queryParams("Apellido");
-            String tel = request.queryParams("Telefono");
-
-
-
-            response.redirect("/");
-
-            return new ModelAndView(attributes,"inicio.ftl");
-        },freeMarkerEngine);
 
         post("/insertpostgres",(request,response)->{
             Map<String,Object> attributes = new HashMap<>();
@@ -112,12 +53,22 @@ public class Main {
             String nombre = request.queryParams("nombre");
             String sector = request.queryParams("sector");
             String nivel = request.queryParams("nivel");
+            String lat = request.queryParams("lat");
+            String lon = request.queryParams("long");
             System.out.println(nombre + " " + sector + " " + nivel + " " + ubicacion);
 
-            bd.insertarRegistro(new Registro(nombre,sector,nivel,ubicacion));
+            bd.insertarRegistro(new Registro(nombre,sector,nivel,ubicacion,Double.parseDouble(lat),Double.parseDouble(lon)));
 
             return "ok";
         });
+
+        get("/prueba",(request,response)->{
+            Map<String,Object> attributes = new HashMap<>();
+
+
+
+            return new ModelAndView(attributes,"prueba.ftl");
+        },freeMarkerEngine);
 
     }
 }
