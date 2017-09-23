@@ -26,7 +26,7 @@
     <script>
         var db = new Dexie("registro_database");
         db.version(1).stores({
-            registros: '++indicador,nombre,sector,nivel,ubicacion,lat,long'
+            registros: '++indicador,nombre,sector,nivel,ubicacion,lat,long,relevant'
         });
 
 //        db.delete();
@@ -205,21 +205,26 @@
                     </div>
 
                     <script>
+                        var conteo = 1;
                         $( window ).on( "load", function() {
-                            var conteo = 1;
+                             conteo = 1;
 //                            db.registros.clear();
                             db.registros.each(function (results) {
-                                var markup = "<tr><td>" + conteo + "</td><td>" + results.nombre + "</td><td>" + results.sector+ "</td>" +
-                                        "<td>" + results.nivel + "</td><td>" + results.ubicacion + "</td><td>"  +
-                                        '<button type="button" id="borrar" onclick = "borrarregistro('+ conteo +')" class="btn btn-warning">Borrar!</button>'
-                                        + "</td><td>" +
-                                        '<button type="button" id="modificar" onclick = "modidificarRegistro('+ conteo +')"  class="btn btn-warning">Modificar!</button>'
-                                        + "</td></tr>";
-                                $("table tbody").append(markup);
+                                if(results.relevant) {
+                                    var markup = "<tr><td>" + results.indicador + "</td><td>" + results.nombre + "</td><td>" + results.sector + "</td>" +
+                                            "<td>" + results.nivel + "</td><td>" + results.ubicacion + "</td><td>" +
+                                            '<button type="button" id="borrar" onclick = "borrarregistro(' + results.indicador + ')" class="btn btn-warning">Borrar!</button>'
+                                            + "</td><td>" +
+                                            '<button type="button" id="modificar" onclick = "modidificarRegistro(' + results.indicador + ')"  class="btn btn-warning">Modificar!</button>'
+                                            + "</td></tr>";
+                                    $("table tbody").append(markup);
 
-                                conteo++;
+                                }
+
+                                conteo = results.indicador + 1;
+                                alert(conteo);
+                                alert(results.indicador);
                             });
-
                         });
                         
                         $("#registrar").click(function (e) {
@@ -231,11 +236,22 @@
                                     nivel : $("#nivel").val(),
                                     ubicacion: $("#ubicacion").val(),
                                     lat: $("#lat").val(),
-                                    long: $("#long").val()
+                                    long: $("#long").val(),
+                                    relevant: true
                                 });
 
-//
-                                location.reload();
+                                var markup = "<tr><td>" + conteo + "</td><td>" +$("#nombre").val() + "</td><td>" + $("#sector").val()+ "</td>" +
+                                        "<td>" + $("#nivel").val() + "</td><td>" + $("#ubicacion").val() + "</td><td>"  +
+                                        '<button type="button" id="borrar" onclick = "borrarregistro('+ conteo +')" class="btn btn-warning">Borrar!</button>'
+                                        + "</td><td>" +
+                                        '<button type="button" id="modificar" onclick = "modidificarRegistro('+ conteo +')"  class="btn btn-warning">Modificar!</button>'
+                                        + "</td></tr>";
+                                $("table tbody").append(markup);
+                                conteo++;
+                                $("#nombre").val("");
+                                $("#sector").val("");
+                                $("#nivel").val("");
+//                                location.reload();
                             }else {
                                 alert("Todos los campos deben de estar completos")
                             }
@@ -253,15 +269,44 @@
                                 else
                                     console.log ("Error con la modificacion");
                             });
-
-                            location.reload();
+                            $("table tr").remove();
+                            conteo = 1;
+                            db.registros.each(function (results) {
+                                if(results.relevant) {
+                                    var markup = "<tr><td>" + conteo + "</td><td>" + results.nombre + "</td><td>" + results.sector + "</td>" +
+                                            "<td>" + results.nivel + "</td><td>" + results.ubicacion + "</td><td>" +
+                                            '<button type="button" id="borrar" onclick = "borrarregistro(' + conteo + ')" class="btn btn-warning">Borrar!</button>'
+                                            + "</td><td>" +
+                                            '<button type="button" id="modificar" onclick = "modidificarRegistro(' + conteo + ')"  class="btn btn-warning">Modificar!</button>'
+                                            + "</td></tr>";
+                                    $("table tbody").append(markup);
+                                }
+                            });
+                            //location.reload();
 
                         }
 
                         function borrarregistro(id) {
                             console.log(id);
-                            db.registros.where(":id").equals(id).delete();
-                            location.reload();
+//                            db.registros.where(":id").equals(id).delete();
+                            db.registros.update(id, {relevant: false}).then(function (updated) {
+                                if (updated)
+                                    console.log ("Exitos en modificacion");
+                                else
+                                    console.log ("Error con la modificacion");
+                            });
+                            $("table tr").remove();
+                            db.registros.each(function (results) {
+                                if(results.relevant) {
+                                    var markup = "<tr><td>" + results.indicador + "</td><td>" + results.nombre + "</td><td>" + results.sector + "</td>" +
+                                            "<td>" + results.nivel + "</td><td>" + results.ubicacion + "</td><td>" +
+                                            '<button type="button" id="borrar" onclick = "borrarregistro(' + results.indicador + ')" class="btn btn-warning">Borrar!</button>'
+                                            + "</td><td>" +
+                                            '<button type="button" id="modificar" onclick = "modidificarRegistro(' + results.indicador + ')"  class="btn btn-warning">Modificar!</button>'
+                                            + "</td></tr>";
+                                    $("table tbody").append(markup);
+                                }
+                            });
                         }
                     </script>
 
@@ -320,20 +365,27 @@
         db.registros.each(function (results) {
 //            console.log(results);
 //            console.log("nombre="+results.nombre+"&sector="+results.sector+"&nivel="+results.nivel+"&ubicacion="+results.ubicacion);
-
+            if(results.relevant) {
                 $.ajax({
                     url: "/insertpostgres",
                     cache: false,
                     type: "POST",
-                    data: "nombre="+results.nombre+"&sector="+results.sector+"&nivel="+results.nivel+"&ubicacion="+results.ubicacion+
-                            "&lat="+results.lat+"&long="+results.long,
-                success: function(html){
-                    console.log("ok");
-                }
+                    data: "nombre=" + results.nombre + "&sector=" + results.sector + "&nivel=" + results.nivel + "&ubicacion=" + results.ubicacion +
+                    "&lat=" + results.lat + "&long=" + results.long,
+                    success: function (html) {
+                        console.log("ok");
+                    }
+                });
+            }
+            db.registros.update(results.indicador, {relevant: false}).then(function (updated) {
+                if (updated)
+                    console.log ("Exitos en modificacion");
+                else
+                    console.log ("Error con la modificacion");
             });
         });
 
-        db.registros.clear();
+//        db.registros.clear();
 
         location.reload();
 
